@@ -45,7 +45,6 @@ const HTML_PAGE = `<!DOCTYPE html>
     select option { background: #302b63; }
     .row { display: flex; gap: 12px; }
     .row > div { flex: 1; }
-    /* Global button style - only for .gen-btn */
     .gen-btn {
       width: 100%;
       margin-top: 24px;
@@ -106,25 +105,25 @@ const HTML_PAGE = `<!DOCTYPE html>
       right: 8px;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(255,255,255,0.1) !important;
-      border: 1px solid rgba(255,255,255,0.2) !important;
-      border-radius: 6px !important;
-      color: #94a3b8 !important;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      color: #94a3b8;
       cursor: pointer;
-      font-size: 0.75rem !important;
-      width: auto !important;
+      font-size: 0.75rem;
+      width: auto;
       min-width: 44px;
-      margin: 0 !important;
-      padding: 4px 8px !important;
+      margin: 0;
+      padding: 4px 8px;
       line-height: 1.4;
       z-index: 2;
     }
-    .toggle-key:hover { background: rgba(255,255,255,0.18) !important; color: #fff !important; }
+    .toggle-key:hover { background: rgba(255,255,255,0.18); color: #fff; }
   </style>
 </head>
 <body>
   <h1>🎬 Grok 影片生成器</h1>
-  <p class="sub">由 ai.ezif.in API 驅動 · 部署於 Cloudflare Workers</p>
+  <p class="sub">由 ai.ezif.in API 驅動 &middot; 部署於 Cloudflare Workers</p>
 
   <div class="card">
     <label>API Key</label>
@@ -179,74 +178,64 @@ const HTML_PAGE = `<!DOCTYPE html>
 
   <script>
     function toggleKey(btn) {
-      const inp = document.getElementById('apiKey');
+      var inp = document.getElementById('apiKey');
       if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '隱藏'; }
       else { inp.type = 'password'; btn.textContent = '顯示'; }
     }
-
-    function setStatus(msg, type='info', loading=false) {
-      const el = document.getElementById('status');
+    function setStatus(msg, type, loading) {
+      type = type || 'info'; loading = loading || false;
+      var el = document.getElementById('status');
       el.style.display = 'block';
       el.className = type;
       el.innerHTML = loading ? '<span class="spinner"></span>' + msg : msg;
     }
-
     async function generate() {
-      const apiKey = document.getElementById('apiKey').value.trim();
-      const prompt = document.getElementById('prompt').value.trim();
-      const model = document.getElementById('model').value;
-      const duration = parseInt(document.getElementById('duration').value);
-      const aspect_ratio = document.getElementById('aspect_ratio').value;
-      const resolution = document.getElementById('resolution').value;
-
+      var apiKey = document.getElementById('apiKey').value.trim();
+      var prompt = document.getElementById('prompt').value.trim();
+      var model = document.getElementById('model').value;
+      var duration = parseInt(document.getElementById('duration').value);
+      var aspect_ratio = document.getElementById('aspect_ratio').value;
+      var resolution = document.getElementById('resolution').value;
       if (!apiKey) return setStatus('⚠️ 請輸入 API Key', 'error');
       if (!prompt) return setStatus('⚠️ 請輸入提示詞', 'error');
-
-      const btn = document.getElementById('genBtn');
+      var btn = document.getElementById('genBtn');
       btn.disabled = true;
       document.getElementById('video-result').style.display = 'none';
       setStatus('🚀 正在提交影片生成請求...', 'info', true);
-
       try {
-        const resp = await fetch('/api/generate', {
+        var resp = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ apiKey, model, prompt, duration, aspect_ratio, resolution })
         });
-        const data = await resp.json();
+        var data = await resp.json();
         if (!resp.ok) throw new Error(data.error || JSON.stringify(data));
-
-        const taskId = data.id || data.task_id;
+        var taskId = data.id || data.task_id;
         if (!taskId) {
-          if (data.video_url || (data.data && data.data[0] && data.data[0].url)) {
-            showVideo(data.video_url || data.data[0].url);
-          } else {
-            setStatus('✅ 回應：\n' + JSON.stringify(data, null, 2), 'success');
-          }
+          if (data.video_url) { showVideo(data.video_url); }
+          else if (data.data && data.data[0] && data.data[0].url) { showVideo(data.data[0].url); }
+          else { setStatus('✅ 回應：\n' + JSON.stringify(data, null, 2), 'success'); }
           return;
         }
-
         setStatus('⏳ 任務已提交 (ID: ' + taskId + ')，正在輪詢結果...', 'info', true);
-        await pollStatus(apiKey, taskId);
+        await pollStatus(apiKey, taskId, 0);
       } catch(e) {
         setStatus('❌ 錯誤：' + e.message, 'error');
       } finally {
         btn.disabled = false;
       }
     }
-
-    async function pollStatus(apiKey, taskId, attempt=0) {
+    async function pollStatus(apiKey, taskId, attempt) {
       if (attempt > 60) {
         setStatus('⌛ 超時：影片生成時間過長，請稍後手動查詢 Task ID: ' + taskId, 'error');
         return;
       }
       try {
-        const resp = await fetch('/api/status?task_id=' + encodeURIComponent(taskId) + '&apiKey=' + encodeURIComponent(apiKey));
-        const data = await resp.json();
-        const status = data.status || data.state;
-
+        var resp = await fetch('/api/status?task_id=' + encodeURIComponent(taskId) + '&apiKey=' + encodeURIComponent(apiKey));
+        var data = await resp.json();
+        var status = data.status || data.state;
         if (status === 'succeeded' || status === 'completed' || status === 'success') {
-          const url = data.video_url || (data.output && data.output.video_url) || (data.data && data.data[0] && data.data[0].url);
+          var url = data.video_url || (data.output && data.output.video_url) || (data.data && data.data[0] && data.data[0].url);
           if (url) showVideo(url);
           else setStatus('✅ 完成：\n' + JSON.stringify(data, null, 2), 'success');
           return;
@@ -255,18 +244,17 @@ const HTML_PAGE = `<!DOCTYPE html>
           setStatus('❌ 生成失敗：' + JSON.stringify(data), 'error');
           return;
         }
-        const progress = data.progress ? ' (' + data.progress + '%)' : '';
-        setStatus('⏳ 狀態：' + (status||'處理中') + progress + '\n已等待 ' + (attempt*5) + ' 秒...', 'info', true);
-        await new Promise(r => setTimeout(r, 5000));
-        await pollStatus(apiKey, taskId, attempt+1);
+        var progress = data.progress ? ' (' + data.progress + '%)' : '';
+        setStatus('⏳ 狀態：' + (status || '處理中') + progress + '\n已等待 ' + (attempt * 5) + ' 秒...', 'info', true);
+        await new Promise(function(r) { setTimeout(r, 5000); });
+        await pollStatus(apiKey, taskId, attempt + 1);
       } catch(e) {
         setStatus('❌ 輪詢錯誤：' + e.message, 'error');
       }
     }
-
     function showVideo(url) {
-      const videoEl = document.getElementById('videoEl');
-      const dlLink = document.getElementById('downloadLink');
+      var videoEl = document.getElementById('videoEl');
+      var dlLink = document.getElementById('downloadLink');
       videoEl.src = url;
       dlLink.href = url;
       document.getElementById('video-result').style.display = 'block';
@@ -279,9 +267,8 @@ const HTML_PAGE = `<!DOCTYPE html>
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const API_BASE = env.API_BASE_URL || 'https://ai.ezif.in/v1';
+    const API_BASE = (env.API_BASE_URL || 'https://ai.ezif.in/v1');
 
-    // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
@@ -292,33 +279,29 @@ export default {
       });
     }
 
-    // Serve frontend
     if (url.pathname === '/' || url.pathname === '') {
       return new Response(HTML_PAGE, {
         headers: { 'Content-Type': 'text/html;charset=UTF-8' }
       });
     }
 
-    // POST /api/generate
     if (url.pathname === '/api/generate' && request.method === 'POST') {
       try {
         const body = await request.json();
         const { apiKey, model, prompt, duration, aspect_ratio, resolution } = body;
-
         if (!apiKey || !prompt) {
           return jsonResponse({ error: 'Missing apiKey or prompt' }, 400);
         }
-
         const payload = { model, prompt, duration, aspect_ratio, resolution };
-        const resp = await fetch(\`\${API_BASE}/videos/generations\`, {
+        const genUrl = API_BASE + '/videos/generations';
+        const resp = await fetch(genUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': \`Bearer \${apiKey}\`
+            'Authorization': 'Bearer ' + apiKey
           },
           body: JSON.stringify(payload)
         });
-
         const data = await resp.json();
         return jsonResponse(data, resp.status);
       } catch (e) {
@@ -326,18 +309,16 @@ export default {
       }
     }
 
-    // GET /api/status?task_id=xxx&apiKey=xxx
     if (url.pathname === '/api/status' && request.method === 'GET') {
       const taskId = url.searchParams.get('task_id');
       const apiKey = url.searchParams.get('apiKey');
-
       if (!taskId || !apiKey) {
         return jsonResponse({ error: 'Missing task_id or apiKey' }, 400);
       }
-
       try {
-        const resp = await fetch(\`\${API_BASE}/videos/generations/\${taskId}\`, {
-          headers: { 'Authorization': \`Bearer \${apiKey}\` }
+        const statusUrl = API_BASE + '/videos/generations/' + taskId;
+        const resp = await fetch(statusUrl, {
+          headers: { 'Authorization': 'Bearer ' + apiKey }
         });
         const data = await resp.json();
         return jsonResponse(data, resp.status);
@@ -350,9 +331,10 @@ export default {
   }
 };
 
-function jsonResponse(data, status = 200) {
+function jsonResponse(data, status) {
+  status = status || 200;
   return new Response(JSON.stringify(data), {
-    status,
+    status: status,
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*'
