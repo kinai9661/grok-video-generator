@@ -1,12 +1,12 @@
 {
   "name": "grok-video-generator",
   "version": "1.0.0",
-  "description": "Grok Video Generator deployed on Cloudflare Workers",
+  "description": "Grok Video Generator — Vercel deployment",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
   },
-  "devDependencies": {
-    "wrangler": "^3.0.0"
+  "engines": {
+    "node": ">=18"
   }
 }
