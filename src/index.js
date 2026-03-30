@@ -30,6 +30,10 @@ const HTML_PAGE = `<!DOCTYPE html>
       --primary-bg:rgba(124,106,245,0.15);--success-bg:rgba(62,207,142,0.15);
       --error-bg:rgba(240,96,96,0.15);--warning-bg:rgba(245,165,36,0.15);
       --success-border:rgba(62,207,142,0.3);
+      --btn-ghost-bg:rgba(255,255,255,0.04);
+      --btn-ghost-hover:rgba(255,255,255,0.08);
+      --btn-secondary-bg:rgba(255,255,255,0.06);
+      --btn-secondary-hover:rgba(255,255,255,0.10);
     }
     [data-theme="light"]{
       --bg:#f5f5f7;--surface:#ffffff;--surface-2:#f0f0f5;--surface-3:#e8e8ef;
@@ -40,6 +44,10 @@ const HTML_PAGE = `<!DOCTYPE html>
       --primary-bg:rgba(101,88,245,0.12);--success-bg:rgba(23,168,107,0.12);
       --error-bg:rgba(217,64,64,0.12);--warning-bg:rgba(212,138,16,0.12);
       --success-border:rgba(23,168,107,0.3);
+      --btn-ghost-bg:rgba(0,0,0,0.03);
+      --btn-ghost-hover:rgba(0,0,0,0.07);
+      --btn-secondary-bg:rgba(0,0,0,0.05);
+      --btn-secondary-hover:rgba(0,0,0,0.09);
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;}
@@ -49,21 +57,129 @@ const HTML_PAGE = `<!DOCTYPE html>
       display:grid;grid-template-columns:220px 1fr 360px;grid-template-rows:52px 1fr;
     }
     @media(max-width:900px){body{grid-template-columns:1fr;grid-template-rows:52px auto auto auto;}}
+
+    /* ── TOPBAR ── */
     .topbar{
       grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;
       padding:0 var(--space-6);background:var(--surface);border-bottom:1px solid var(--border);
     }
     .logo{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);font-weight:600;letter-spacing:-.02em;}
     .logo svg{flex-shrink:0;}
-    .topbar-right{display:flex;align-items:center;gap:var(--space-3);}
-    .theme-btn{
-      background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);
-      padding:var(--space-1) var(--space-2);color:var(--text-muted);cursor:pointer;
-      display:flex;align-items:center;transition:all var(--transition);
-    }
-    .theme-btn:hover{color:var(--text);border-color:var(--border-focus);}
+    .topbar-right{display:flex;align-items:center;gap:var(--space-2);}
     .status-dot{width:7px;height:7px;border-radius:50%;background:var(--success);display:inline-block;}
     .api-status{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);}
+
+    /* ── BUTTON SYSTEM ── */
+    /* Base reset */
+    button{cursor:pointer;background:none;border:none;font-family:var(--font-body);}
+
+    /* Primary — solid accent fill */
+    .btn-primary{
+      display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
+      padding:0 var(--space-5);height:40px;
+      background:var(--primary);color:#fff;
+      border:1.5px solid transparent;border-radius:var(--radius-lg);
+      font-size:var(--text-sm);font-weight:600;letter-spacing:.01em;
+      transition:background var(--transition),transform var(--transition),box-shadow var(--transition);
+      box-shadow:0 1px 3px rgba(0,0,0,.18),0 0 0 0 var(--primary-bg);
+    }
+    .btn-primary:hover:not(:disabled){
+      background:var(--primary-hover);transform:translateY(-1px);
+      box-shadow:0 4px 14px rgba(124,106,245,.35);
+    }
+    .btn-primary:active:not(:disabled){background:var(--primary-active);transform:translateY(0);}
+    .btn-primary:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+
+    /* Primary full-width (generate button) */
+    .btn-primary-block{
+      width:100%;height:48px;padding:0;
+      background:var(--primary);color:#fff;
+      border:1.5px solid transparent;border-radius:var(--radius-lg);
+      font-size:var(--text-sm);font-weight:700;letter-spacing:.02em;
+      display:flex;align-items:center;justify-content:center;gap:var(--space-2);
+      transition:background var(--transition),transform var(--transition),box-shadow var(--transition);
+      box-shadow:0 1px 4px rgba(0,0,0,.2);
+      margin-top:var(--space-6);
+    }
+    .btn-primary-block:hover:not(:disabled){
+      background:var(--primary-hover);transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(124,106,245,.38);
+    }
+    .btn-primary-block:active:not(:disabled){background:var(--primary-active);transform:translateY(0);}
+    .btn-primary-block:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none;}
+
+    /* Secondary — subtle fill, no heavy border */
+    .btn-secondary{
+      display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
+      padding:0 var(--space-4);height:36px;
+      background:var(--btn-secondary-bg);color:var(--text-muted);
+      border:1px solid var(--border);border-radius:var(--radius-md);
+      font-size:var(--text-xs);font-weight:500;
+      transition:background var(--transition),color var(--transition),border-color var(--transition);
+    }
+    .btn-secondary:hover{background:var(--btn-secondary-hover);color:var(--text);border-color:var(--border-focus);}
+    .btn-secondary:active{background:var(--surface-3);}
+
+    /* Ghost — no fill, minimal border */
+    .btn-ghost{
+      display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
+      padding:0 var(--space-3);height:32px;
+      background:var(--btn-ghost-bg);color:var(--text-muted);
+      border:1px solid transparent;border-radius:var(--radius-md);
+      font-size:var(--text-xs);font-weight:500;
+      transition:background var(--transition),color var(--transition);
+    }
+    .btn-ghost:hover{background:var(--btn-ghost-hover);color:var(--text);}
+    .btn-ghost:active{background:var(--surface-3);}
+
+    /* Icon-only button (theme toggle, small actions) */
+    .btn-icon{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:34px;height:34px;
+      background:var(--btn-ghost-bg);color:var(--text-muted);
+      border:1px solid var(--border);border-radius:var(--radius-md);
+      transition:background var(--transition),color var(--transition),border-color var(--transition);
+    }
+    .btn-icon:hover{background:var(--btn-ghost-hover);color:var(--text);border-color:var(--border-focus);}
+    .btn-icon:active{background:var(--surface-3);}
+
+    /* Inline text button (toggle show/hide) */
+    .btn-inline{
+      display:inline-flex;align-items:center;
+      padding:2px var(--space-2);height:26px;
+      background:var(--surface-3);color:var(--text-muted);
+      border:1px solid var(--border);border-radius:var(--radius-sm);
+      font-size:var(--text-xs);font-weight:500;
+      transition:background var(--transition),color var(--transition);
+    }
+    .btn-inline:hover{color:var(--text);background:var(--surface-2);}
+
+    /* Download button — success-tinted */
+    .btn-download{
+      display:flex;align-items:center;justify-content:center;gap:var(--space-2);
+      width:100%;height:40px;margin-top:var(--space-3);
+      background:var(--success-bg);color:var(--success);
+      border:1px solid var(--success-border);border-radius:var(--radius-md);
+      font-size:var(--text-xs);font-weight:600;text-decoration:none;
+      transition:background var(--transition),box-shadow var(--transition),transform var(--transition);
+    }
+    .btn-download:hover{
+      background:rgba(62,207,142,.22);transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(62,207,142,.2);
+    }
+    .btn-download:active{transform:translateY(0);}
+
+    /* Example chip button */
+    .example-chip{
+      background:var(--surface-2);border:1px solid var(--border);
+      border-radius:var(--radius-full);padding:4px 12px;
+      font-size:var(--text-xs);color:var(--text-muted);
+      transition:all var(--transition);
+    }
+    .example-chip:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
+    .example-chip:active{transform:scale(.97);}
+
+    /* ── LAYOUT ── */
     .sidebar{
       background:var(--surface);border-right:1px solid var(--border);
       padding:var(--space-6) var(--space-4);display:flex;flex-direction:column;gap:var(--space-6);
@@ -107,34 +223,11 @@ const HTML_PAGE = `<!DOCTYPE html>
     .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4);}
     @media(max-width:600px){.grid-3{grid-template-columns:1fr;}}
     .api-key-wrap{position:relative;}
-    .api-key-wrap input{padding-right:70px;}
-    .toggle-key{
-      position:absolute;right:var(--space-2);top:50%;transform:translateY(-50%);
-      background:var(--surface-3);border:1px solid var(--border);
-      border-radius:var(--radius-sm);color:var(--text-muted);cursor:pointer;
-      font-size:var(--text-xs);padding:3px 10px;transition:all var(--transition);
-      font-family:var(--font-body);
-    }
-    .toggle-key:hover{color:var(--text);}
+    .api-key-wrap input{padding-right:72px;}
+    .toggle-key-wrap{position:absolute;right:var(--space-2);top:50%;transform:translateY(-50%);}
     .examples{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-3);}
-    .example-chip{
-      background:var(--surface-2);border:1px solid var(--border);
-      border-radius:var(--radius-full);padding:4px 12px;
-      font-size:var(--text-xs);color:var(--text-muted);cursor:pointer;
-      transition:all var(--transition);
-    }
-    .example-chip:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
-    .gen-btn{
-      width:100%;padding:var(--space-4);background:var(--primary);border:none;
-      border-radius:var(--radius-lg);color:#fff;
-      font-family:var(--font-body);font-size:var(--text-sm);font-weight:600;
-      cursor:pointer;letter-spacing:.01em;
-      transition:background var(--transition),transform var(--transition),box-shadow var(--transition);
-      margin-top:var(--space-6);
-    }
-    .gen-btn:hover:not(:disabled){background:var(--primary-hover);transform:translateY(-1px);}
-    .gen-btn:active:not(:disabled){background:var(--primary-active);transform:translateY(0);}
-    .gen-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+    /* ── PANEL ── */
     .panel{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
     @media(max-width:900px){.panel{border-left:none;border-top:1px solid var(--border);}}
     .panel-header{
@@ -164,14 +257,6 @@ const HTML_PAGE = `<!DOCTYPE html>
     .video-wrap{margin-top:var(--space-5);display:none;}
     .video-wrap.visible{display:block;}
     .video-wrap video{width:100%;border-radius:var(--radius-lg);background:#000;max-height:280px;}
-    .download-btn{
-      display:flex;align-items:center;justify-content:center;gap:var(--space-2);
-      width:100%;margin-top:var(--space-3);padding:var(--space-3);
-      background:var(--success-bg);border:1px solid var(--success-border);
-      border-radius:var(--radius-md);color:var(--success);
-      font-size:var(--text-xs);font-weight:600;text-decoration:none;
-      transition:all var(--transition);cursor:pointer;
-    }
     .task-list{display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-4);}
     .task-node{
       background:var(--surface-2);border-radius:var(--radius-md);
@@ -202,6 +287,9 @@ const HTML_PAGE = `<!DOCTYPE html>
     ::selection{background:var(--primary-bg);color:var(--text);}
     :focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:var(--radius-sm);}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    a,button,[role="button"],input,textarea,select{
+      transition:color var(--transition),background var(--transition),border-color var(--transition),box-shadow var(--transition),transform var(--transition);
+    }
   </style>
 </head>
 <body>
@@ -218,8 +306,8 @@ const HTML_PAGE = `<!DOCTYPE html>
         <span class="status-dot"></span>
         <span>ai.ezif.in</span>
       </div>
-      <button class="theme-btn" id="themeBtn" aria-label="切換深淺色">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <button class="btn-icon" id="themeBtn" aria-label="切換深淺色">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
     </div>
   </header>
@@ -255,12 +343,15 @@ const HTML_PAGE = `<!DOCTYPE html>
       <h1>影片生成台</h1>
       <p>填寫設定後點擊生成，進度會顯示在右側面板</p>
     </div>
+
     <div class="form-card">
       <div class="field">
         <label for="apiKey">API Key</label>
         <div class="api-key-wrap">
           <input type="password" id="apiKey" placeholder="輸入你的 API Key" autocomplete="off" />
-          <button type="button" class="toggle-key" id="toggleKeyBtn">顯示</button>
+          <span class="toggle-key-wrap">
+            <button type="button" class="btn-inline" id="toggleKeyBtn">顯示</button>
+          </span>
         </div>
       </div>
       <div class="field">
@@ -271,6 +362,7 @@ const HTML_PAGE = `<!DOCTYPE html>
         </select>
       </div>
     </div>
+
     <div class="form-card">
       <div class="field">
         <label for="prompt">提示詞 Prompt</label>
@@ -293,7 +385,10 @@ const HTML_PAGE = `<!DOCTYPE html>
           <select id="resolution"><option value="720p">720p</option><option value="1080p">1080p</option></select>
         </div>
       </div>
-      <button type="button" id="genBtn" class="gen-btn">✨ 生成影片</button>
+      <button type="button" id="genBtn" class="btn-primary-block">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        生成影片
+      </button>
     </div>
   </main>
 
@@ -315,7 +410,7 @@ const HTML_PAGE = `<!DOCTYPE html>
       </div>
       <div class="video-wrap" id="videoWrap">
         <video id="videoEl" controls playsinline></video>
-        <a id="downloadLink" class="download-btn" download="grok-video.mp4" href="#">
+        <a id="downloadLink" class="btn-download" download="grok-video.mp4" href="#">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           下載影片
         </a>
@@ -326,7 +421,6 @@ const HTML_PAGE = `<!DOCTYPE html>
   </aside>
 
   <script>
-  // 等 DOM 完全載入後才初始化所有事件，避免 getElementById 取不到節點
   document.addEventListener('DOMContentLoaded', function() {
     var root = document.documentElement;
     var theme = root.getAttribute('data-theme') ||
@@ -336,8 +430,8 @@ const HTML_PAGE = `<!DOCTYPE html>
     var themeBtn = document.getElementById('themeBtn');
     function renderThemeIcon() {
       themeBtn.innerHTML = theme === 'dark'
-        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
-        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+        ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+        : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
     }
     renderThemeIcon();
     themeBtn.addEventListener('click', function() {
@@ -418,7 +512,6 @@ const HTML_PAGE = `<!DOCTYPE html>
       document.getElementById('sideCount').textContent = genCount;
       document.getElementById('sideStatus').textContent = '完成';
     }
-
     function extractError(data) {
       if (!data) return '未知錯誤';
       if (typeof data === 'string') return data;
@@ -430,7 +523,6 @@ const HTML_PAGE = `<!DOCTYPE html>
       if (data.detail) return typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
       return JSON.stringify(data);
     }
-
     function extractVideoUrl(data) {
       if (!data) return null;
       if (data.video_url) return data.video_url;
@@ -442,14 +534,12 @@ const HTML_PAGE = `<!DOCTYPE html>
       if (data.result && data.result.video_url) return data.result.video_url;
       return null;
     }
-
     function safeJson(resp) {
       return resp.text().then(function(text) {
         try { return { ok: resp.ok, status: resp.status, data: JSON.parse(text) }; }
         catch(e) { return { ok: resp.ok, status: resp.status, data: { error: text || ('HTTP ' + resp.status) } }; }
       });
     }
-
     function pollStatus(apiKey, taskId, attempt) {
       if (attempt > 60) {
         setStatus('超時，請稍後手動查詢\nTask ID: ' + taskId, 'error');
@@ -499,7 +589,7 @@ const HTML_PAGE = `<!DOCTYPE html>
       if (!prompt) { setStatus('請輸入提示詞', 'error'); return; }
 
       genBtn.disabled = true;
-      genBtn.textContent = '生成中...';
+      genBtn.innerHTML = '<span class="spinner"></span> 生成中…';
       document.getElementById('videoWrap').className = 'video-wrap';
       document.getElementById('taskList').innerHTML = '';
       document.getElementById('rawBlock').className = 'raw-block';
@@ -508,7 +598,7 @@ const HTML_PAGE = `<!DOCTYPE html>
 
       function resetBtn() {
         genBtn.disabled = false;
-        genBtn.textContent = '✨ 生成影片';
+        genBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 生成影片';
       }
 
       fetch('/api/generate', {
@@ -545,7 +635,7 @@ const HTML_PAGE = `<!DOCTYPE html>
         updateTask('submit', '失敗：' + e.message, 'err');
       });
     });
-  }); // end DOMContentLoaded
+  });
   </script>
 </body>
 </html>`;
