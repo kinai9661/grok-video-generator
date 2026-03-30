@@ -1,360 +1,315 @@
 const HTML_PAGE = `<!DOCTYPE html>
 <html lang="zh-TW" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grok Video Studio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-      --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;
-      --space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;
-      --space-8:2rem;--space-10:2.5rem;--space-12:3rem;
-      --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;
-      --radius-xl:1rem;--radius-full:9999px;
-      --transition:180ms cubic-bezier(0.16,1,0.3,1);
-      --font-body:'Inter','Helvetica Neue',sans-serif;
-    }
-    [data-theme="dark"]{
-      --bg:#0e0e10;--surface:#16161a;--surface-2:#1c1c21;--surface-3:#242429;
-      --border:rgba(255,255,255,0.08);--border-focus:rgba(255,255,255,0.25);
-      --text:#e8e8ea;--text-muted:#8a8a9a;--text-faint:#4a4a5a;
-      --primary:#7c6af5;--primary-hover:#6a58e0;--primary-active:#5847c4;
-      --success:#3ecf8e;--error:#f06060;--warning:#f5a524;
-      --primary-bg:rgba(124,106,245,0.15);--success-bg:rgba(62,207,142,0.15);
-      --error-bg:rgba(240,96,96,0.15);--warning-bg:rgba(245,165,36,0.15);
-      --success-border:rgba(62,207,142,0.3);
-      --btn-ghost-bg:rgba(255,255,255,0.04);
-      --btn-ghost-hover:rgba(255,255,255,0.08);
-      --btn-secondary-bg:rgba(255,255,255,0.06);
-      --btn-secondary-hover:rgba(255,255,255,0.10);
-    }
-    [data-theme="light"]{
-      --bg:#f5f5f7;--surface:#ffffff;--surface-2:#f0f0f5;--surface-3:#e8e8ef;
-      --border:rgba(0,0,0,0.08);--border-focus:rgba(0,0,0,0.3);
-      --text:#1a1a2e;--text-muted:#6a6a7a;--text-faint:#aaaabc;
-      --primary:#6558f5;--primary-hover:#5447e0;--primary-active:#4338c8;
-      --success:#17a86b;--error:#d94040;--warning:#d48a10;
-      --primary-bg:rgba(101,88,245,0.12);--success-bg:rgba(23,168,107,0.12);
-      --error-bg:rgba(217,64,64,0.12);--warning-bg:rgba(212,138,16,0.12);
-      --success-border:rgba(23,168,107,0.3);
-      --btn-ghost-bg:rgba(0,0,0,0.03);
-      --btn-ghost-hover:rgba(0,0,0,0.07);
-      --btn-secondary-bg:rgba(0,0,0,0.05);
-      --btn-secondary-hover:rgba(0,0,0,0.09);
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;}
-    body{
-      font-family:var(--font-body);font-size:var(--text-sm);
-      background:var(--bg);color:var(--text);min-height:100dvh;
-      display:grid;grid-template-columns:220px 1fr 360px;grid-template-rows:52px 1fr;
-    }
-    @media(max-width:900px){body{grid-template-columns:1fr;grid-template-rows:52px auto auto auto;}}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Grok Video Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font:'Inter','Helvetica Neue',sans-serif;
+  --tx:clamp(0.75rem,.7rem+.25vw,.875rem);
+  --ts:clamp(.875rem,.8rem+.35vw,1rem);
+  --tb:clamp(1rem,.95rem+.25vw,1.125rem);
+  --tl:clamp(1.125rem,1rem+.75vw,1.5rem);
+  --s1:.25rem;--s2:.5rem;--s3:.75rem;--s4:1rem;--s5:1.25rem;--s6:1.5rem;
+  --s8:2rem;--s10:2.5rem;--s12:3rem;
+  --rm:.375rem;--rmd:.5rem;--rl:.75rem;--rxl:1rem;--rf:9999px;
+  --ease:180ms cubic-bezier(.16,1,.3,1);
+}
+[data-theme="dark"]{
+  --bg:#0a0a0c;--sf:#111114;--sf2:#18181c;--sf3:#202026;
+  --bd:rgba(255,255,255,.07);--bdf:rgba(255,255,255,.18);
+  --tx:#dddde6;--txm:#7b7b8c;--txf:#3e3e50;
+  --pr:#6c63ff;--prh:#5a52e6;--pra:#4840cc;
+  --prb:rgba(108,99,255,.14);--prr:rgba(108,99,255,.25);
+  --ok:#34d58e;--okb:rgba(52,213,142,.14);--okr:rgba(52,213,142,.28);
+  --er:#f05555;--erb:rgba(240,85,85,.14);
+  --wn:#f5a623;--wnb:rgba(245,166,35,.14);
+  --g1:rgba(255,255,255,.04);--g2:rgba(255,255,255,.08);
+  --sh:0 0 0 1px rgba(255,255,255,.05),0 4px 16px rgba(0,0,0,.5);
+  --shl:0 0 0 1px rgba(108,99,255,.2),0 8px 32px rgba(108,99,255,.25);
+}
+[data-theme="light"]{
+  --bg:#f3f3f8;--sf:#ffffff;--sf2:#f0f0f6;--sf3:#e8e8f0;
+  --bd:rgba(0,0,0,.08);--bdf:rgba(0,0,0,.2);
+  --tx:#18182a;--txm:#6a6a80;--txf:#b0b0c0;
+  --pr:#5750f5;--prh:#4640e0;--pra:#3530c0;
+  --prb:rgba(87,80,245,.1);--prr:rgba(87,80,245,.22);
+  --ok:#0ea868;--okb:rgba(14,168,104,.1);--okr:rgba(14,168,104,.25);
+  --er:#d43535;--erb:rgba(212,53,53,.1);
+  --wn:#d4860a;--wnb:rgba(212,134,10,.1);
+  --g1:rgba(0,0,0,.03);--g2:rgba(0,0,0,.06);
+  --sh:0 0 0 1px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.07);
+  --shl:0 0 0 1px rgba(87,80,245,.18),0 8px 32px rgba(87,80,245,.18);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth;}
+body{
+  font-family:var(--font);font-size:var(--ts);color:var(--tx);
+  background:var(--bg);min-height:100dvh;
+  display:grid;
+  grid-template-columns:52px 1fr 380px;
+  grid-template-rows:100dvh;
+  overflow:hidden;
+}
+@media(max-width:960px){
+  body{grid-template-columns:1fr;grid-template-rows:auto;overflow:auto;height:auto;}
+}
 
-    /* ── TOPBAR ── */
-    .topbar{
-      grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;
-      padding:0 var(--space-6);background:var(--surface);border-bottom:1px solid var(--border);
-    }
-    .logo{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);font-weight:600;letter-spacing:-.02em;}
-    .logo svg{flex-shrink:0;}
-    .topbar-right{display:flex;align-items:center;gap:var(--space-2);}
-    .status-dot{width:7px;height:7px;border-radius:50%;background:var(--success);display:inline-block;}
-    .api-status{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);}
+/* ── NAV RAIL ── */
+.rail{
+  background:var(--sf);border-right:1px solid var(--bd);
+  display:flex;flex-direction:column;align-items:center;
+  padding:var(--s4) 0;gap:var(--s2);
+}
+@media(max-width:960px){.rail{flex-direction:row;border-right:none;border-bottom:1px solid var(--bd);padding:0 var(--s4);justify-content:space-between;}}
+.rail-logo{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:var(--rl);
+  background:var(--pr);color:#fff;margin-bottom:var(--s4);
+  flex-shrink:0;
+}
+@media(max-width:960px){.rail-logo{margin-bottom:0;}}
+.rail-spacer{flex:1;}
+@media(max-width:960px){.rail-spacer{display:none;}}
+.rail-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:var(--rmd);cursor:pointer;
+  background:none;border:none;color:var(--txm);
+  transition:background var(--ease),color var(--ease);
+}
+.rail-btn:hover{background:var(--g2);color:var(--tx);}
+.rail-btn:active{background:var(--sf3);}
 
-    /* ── BUTTON SYSTEM ── */
-    /* Base reset */
-    button{cursor:pointer;background:none;border:none;font-family:var(--font-body);}
+/* ── MAIN SCROLL ── */
+.main{overflow-y:auto;display:flex;flex-direction:column;}
+@media(max-width:960px){.main{overflow:visible;}}
 
-    /* Primary — solid accent fill */
-    .btn-primary{
-      display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
-      padding:0 var(--space-5);height:40px;
-      background:var(--primary);color:#fff;
-      border:1.5px solid transparent;border-radius:var(--radius-lg);
-      font-size:var(--text-sm);font-weight:600;letter-spacing:.01em;
-      transition:background var(--transition),transform var(--transition),box-shadow var(--transition);
-      box-shadow:0 1px 3px rgba(0,0,0,.18),0 0 0 0 var(--primary-bg);
-    }
-    .btn-primary:hover:not(:disabled){
-      background:var(--primary-hover);transform:translateY(-1px);
-      box-shadow:0 4px 14px rgba(124,106,245,.35);
-    }
-    .btn-primary:active:not(:disabled){background:var(--primary-active);transform:translateY(0);}
-    .btn-primary:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:10;
+  background:var(--sf);border-bottom:1px solid var(--bd);
+  padding:0 var(--s6);height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.topbar-title{font-size:var(--ts);font-weight:600;letter-spacing:-.02em;}
+.topbar-right{display:flex;align-items:center;gap:var(--s2);}
+.dot-status{display:flex;align-items:center;gap:var(--s2);font-size:var(--tx);color:var(--txm);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok);}
 
-    /* Primary full-width (generate button) */
-    .btn-primary-block{
-      width:100%;height:48px;padding:0;
-      background:var(--primary);color:#fff;
-      border:1.5px solid transparent;border-radius:var(--radius-lg);
-      font-size:var(--text-sm);font-weight:700;letter-spacing:.02em;
-      display:flex;align-items:center;justify-content:center;gap:var(--space-2);
-      transition:background var(--transition),transform var(--transition),box-shadow var(--transition);
-      box-shadow:0 1px 4px rgba(0,0,0,.2);
-      margin-top:var(--space-6);
-    }
-    .btn-primary-block:hover:not(:disabled){
-      background:var(--primary-hover);transform:translateY(-1px);
-      box-shadow:0 6px 20px rgba(124,106,245,.38);
-    }
-    .btn-primary-block:active:not(:disabled){background:var(--primary-active);transform:translateY(0);}
-    .btn-primary-block:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none;}
+/* ── CONTENT ── */
+.content{padding:var(--s8) var(--s6);display:flex;flex-direction:column;gap:var(--s6);flex:1;}
+@media(max-width:960px){.content{padding:var(--s4);}}
 
-    /* Secondary — subtle fill, no heavy border */
-    .btn-secondary{
-      display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
-      padding:0 var(--space-4);height:36px;
-      background:var(--btn-secondary-bg);color:var(--text-muted);
-      border:1px solid var(--border);border-radius:var(--radius-md);
-      font-size:var(--text-xs);font-weight:500;
-      transition:background var(--transition),color var(--transition),border-color var(--transition);
-    }
-    .btn-secondary:hover{background:var(--btn-secondary-hover);color:var(--text);border-color:var(--border-focus);}
-    .btn-secondary:active{background:var(--surface-3);}
+/* ── CARDS ── */
+.card{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--rxl);padding:var(--s6);
+  box-shadow:var(--sh);
+}
+.card-title{font-size:var(--tx);font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txm);margin-bottom:var(--s5);}
 
-    /* Ghost — no fill, minimal border */
-    .btn-ghost{
-      display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
-      padding:0 var(--space-3);height:32px;
-      background:var(--btn-ghost-bg);color:var(--text-muted);
-      border:1px solid transparent;border-radius:var(--radius-md);
-      font-size:var(--text-xs);font-weight:500;
-      transition:background var(--transition),color var(--transition);
-    }
-    .btn-ghost:hover{background:var(--btn-ghost-hover);color:var(--text);}
-    .btn-ghost:active{background:var(--surface-3);}
+/* ── FIELDS ── */
+.field{display:flex;flex-direction:column;gap:var(--s2);}
+.field+.field{margin-top:var(--s5);}
+label{font-size:var(--tx);font-weight:500;color:var(--txm);letter-spacing:.04em;}
+input,select,textarea{
+  width:100%;padding:var(--s3) var(--s4);
+  background:var(--sf2);border:1px solid var(--bd);
+  border-radius:var(--rl);color:var(--tx);
+  font-family:var(--font);font-size:var(--ts);
+  outline:none;
+  transition:border-color var(--ease),box-shadow var(--ease),background var(--ease);
+  -webkit-appearance:none;appearance:none;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--pr);box-shadow:0 0 0 3px var(--prb);background:var(--sf);
+}
+textarea{resize:vertical;min-height:100px;line-height:1.6;}
+.key-wrap{position:relative;}
+.key-wrap input{padding-right:68px;}
+.show-btn{
+  position:absolute;right:var(--s2);top:50%;transform:translateY(-50%);
+  padding:2px var(--s3);height:26px;
+  background:var(--sf3);color:var(--txm);
+  border:1px solid var(--bd);border-radius:var(--rm);
+  font-size:var(--tx);font-weight:500;cursor:pointer;
+  transition:background var(--ease),color var(--ease);
+}
+.show-btn:hover{color:var(--tx);background:var(--sf2);}
 
-    /* Icon-only button (theme toggle, small actions) */
-    .btn-icon{
-      display:inline-flex;align-items:center;justify-content:center;
-      width:34px;height:34px;
-      background:var(--btn-ghost-bg);color:var(--text-muted);
-      border:1px solid var(--border);border-radius:var(--radius-md);
-      transition:background var(--transition),color var(--transition),border-color var(--transition);
-    }
-    .btn-icon:hover{background:var(--btn-ghost-hover);color:var(--text);border-color:var(--border-focus);}
-    .btn-icon:active{background:var(--surface-3);}
+/* ── GRID ── */
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s4);}
+@media(max-width:600px){.g3{grid-template-columns:1fr;}}
 
-    /* Inline text button (toggle show/hide) */
-    .btn-inline{
-      display:inline-flex;align-items:center;
-      padding:2px var(--space-2);height:26px;
-      background:var(--surface-3);color:var(--text-muted);
-      border:1px solid var(--border);border-radius:var(--radius-sm);
-      font-size:var(--text-xs);font-weight:500;
-      transition:background var(--transition),color var(--transition);
-    }
-    .btn-inline:hover{color:var(--text);background:var(--surface-2);}
+/* ── CHIPS ── */
+.chips{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s3);}
+.chip{
+  padding:4px 12px;border-radius:var(--rf);
+  background:var(--sf2);border:1px solid var(--bd);
+  font-size:var(--tx);color:var(--txm);cursor:pointer;
+  transition:all var(--ease);
+}
+.chip:hover{border-color:var(--pr);color:var(--pr);background:var(--prb);}
+.chip:active{transform:scale(.96);}
 
-    /* Download button — success-tinted */
-    .btn-download{
-      display:flex;align-items:center;justify-content:center;gap:var(--space-2);
-      width:100%;height:40px;margin-top:var(--space-3);
-      background:var(--success-bg);color:var(--success);
-      border:1px solid var(--success-border);border-radius:var(--radius-md);
-      font-size:var(--text-xs);font-weight:600;text-decoration:none;
-      transition:background var(--transition),box-shadow var(--transition),transform var(--transition);
-    }
-    .btn-download:hover{
-      background:rgba(62,207,142,.22);transform:translateY(-1px);
-      box-shadow:0 4px 12px rgba(62,207,142,.2);
-    }
-    .btn-download:active{transform:translateY(0);}
+/* ── GENERATE BTN ── */
+.gen-btn{
+  width:100%;height:50px;margin-top:var(--s6);
+  background:var(--pr);color:#fff;
+  border:none;border-radius:var(--rl);
+  font-family:var(--font);font-size:var(--ts);font-weight:700;letter-spacing:.02em;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:var(--s2);
+  transition:background var(--ease),transform var(--ease),box-shadow var(--ease);
+  box-shadow:0 2px 8px var(--prr);
+}
+.gen-btn:hover:not(:disabled){background:var(--prh);transform:translateY(-1px);box-shadow:0 6px 24px var(--prr);}
+.gen-btn:active:not(:disabled){background:var(--pra);transform:translateY(0);}
+.gen-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none;}
 
-    /* Example chip button */
-    .example-chip{
-      background:var(--surface-2);border:1px solid var(--border);
-      border-radius:var(--radius-full);padding:4px 12px;
-      font-size:var(--text-xs);color:var(--text-muted);
-      transition:all var(--transition);
-    }
-    .example-chip:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
-    .example-chip:active{transform:scale(.97);}
+/* ── PANEL ── */
+.panel{
+  background:var(--sf);border-left:1px solid var(--bd);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+@media(max-width:960px){.panel{border-left:none;border-top:1px solid var(--bd);min-height:360px;}}
+.panel-head{
+  padding:0 var(--s5);height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--bd);flex-shrink:0;
+}
+.panel-head-title{font-size:var(--ts);font-weight:600;}
+.panel-body{flex:1;overflow-y:auto;padding:var(--s5);}
 
-    /* ── LAYOUT ── */
-    .sidebar{
-      background:var(--surface);border-right:1px solid var(--border);
-      padding:var(--space-6) var(--space-4);display:flex;flex-direction:column;gap:var(--space-6);
-      overflow-y:auto;
-    }
-    @media(max-width:900px){.sidebar{border-right:none;border-bottom:1px solid var(--border);padding:var(--space-4);}}
-    .sidebar-section-title{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin-bottom:var(--space-2);}
-    .stat-card{background:var(--surface-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);border:1px solid var(--border);}
-    .stat-card+.stat-card{margin-top:var(--space-2);}
-    .stat-label{font-size:var(--text-xs);color:var(--text-muted);margin-bottom:2px;}
-    .stat-value{font-size:var(--text-base);font-weight:600;font-variant-numeric:tabular-nums;}
-    .stat-value.ok{color:var(--success);}
-    .stat-value.muted{color:var(--text-muted);}
-    .model-badge{
-      display:inline-flex;align-items:center;background:var(--primary-bg);
-      color:var(--primary);font-size:var(--text-xs);font-weight:500;
-      border-radius:var(--radius-full);padding:2px 10px;margin-top:var(--space-1);
-    }
-    .main{padding:var(--space-8) var(--space-6);overflow-y:auto;display:flex;flex-direction:column;gap:var(--space-6);}
-    @media(max-width:900px){.main{padding:var(--space-4);}}
-    .section-header{margin-bottom:var(--space-4);}
-    .section-header h1{font-size:var(--text-lg);font-weight:600;letter-spacing:-.02em;}
-    .section-header p{font-size:var(--text-xs);color:var(--text-muted);margin-top:2px;}
-    .form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--space-6);}
-    .field{display:flex;flex-direction:column;gap:var(--space-2);}
-    .field+.field{margin-top:var(--space-5);}
-    label{font-size:var(--text-xs);font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;}
-    input,select,textarea{
-      width:100%;padding:var(--space-3) var(--space-4);
-      background:var(--surface-2);border:1px solid var(--border);
-      border-radius:var(--radius-md);color:var(--text);
-      font-family:var(--font-body);font-size:var(--text-sm);
-      outline:none;transition:border-color var(--transition),box-shadow var(--transition);
-      -webkit-appearance:none;appearance:none;
-    }
-    input:focus,select:focus,textarea:focus{
-      border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-bg);
-    }
-    textarea{resize:vertical;min-height:110px;line-height:1.6;}
-    select{padding-right:36px;cursor:pointer;}
-    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4);}
-    @media(max-width:600px){.grid-3{grid-template-columns:1fr;}}
-    .api-key-wrap{position:relative;}
-    .api-key-wrap input{padding-right:72px;}
-    .toggle-key-wrap{position:absolute;right:var(--space-2);top:50%;transform:translateY(-50%);}
-    .examples{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-3);}
+/* ── BADGE ── */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:var(--tx);font-weight:600;padding:2px 10px;border-radius:var(--rf);
+}
+.badge-info{background:var(--prb);color:var(--pr);}
+.badge-ok{background:var(--okb);color:var(--ok);}
+.badge-err{background:var(--erb);color:var(--er);}
+.badge-warn{background:var(--wnb);color:var(--wn);}
 
-    /* ── PANEL ── */
-    .panel{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-    @media(max-width:900px){.panel{border-left:none;border-top:1px solid var(--border);}}
-    .panel-header{
-      padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--border);
-      display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
-    }
-    .panel-title{font-size:var(--text-sm);font-weight:600;}
-    .panel-body{flex:1;overflow-y:auto;padding:var(--space-5);}
-    .status-block{
-      background:var(--surface-2);border:1px solid var(--border);
-      border-radius:var(--radius-lg);padding:var(--space-4);display:none;
-    }
-    .status-block.visible{display:block;}
-    .status-row{display:flex;align-items:center;gap:var(--space-2);}
-    .status-badge{
-      display:inline-flex;align-items:center;gap:5px;
-      font-size:var(--text-xs);font-weight:600;padding:2px 10px;
-      border-radius:var(--radius-full);
-    }
-    .status-badge.info{background:var(--primary-bg);color:var(--primary);}
-    .status-badge.ok{background:var(--success-bg);color:var(--success);}
-    .status-badge.error{background:var(--error-bg);color:var(--error);}
-    .status-badge.warning{background:var(--warning-bg);color:var(--warning);}
-    .status-msg{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);line-height:1.6;white-space:pre-wrap;word-break:break-all;}
-    .spinner{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-    .video-wrap{margin-top:var(--space-5);display:none;}
-    .video-wrap.visible{display:block;}
-    .video-wrap video{width:100%;border-radius:var(--radius-lg);background:#000;max-height:280px;}
-    .task-list{display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-4);}
-    .task-node{
-      background:var(--surface-2);border-radius:var(--radius-md);
-      border:1px solid var(--border);padding:var(--space-3) var(--space-4);
-      display:flex;align-items:center;gap:var(--space-3);
-    }
-    .task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--text-faint);}
-    .task-dot.active{background:var(--primary);}
-    .task-dot.done{background:var(--success);}
-    .task-dot.err{background:var(--error);}
-    .task-info{flex:1;}
-    .task-label{font-size:var(--text-xs);font-weight:500;}
-    .task-sub{font-size:var(--text-xs);color:var(--text-muted);margin-top:1px;}
-    .empty-panel{
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      min-height:200px;text-align:center;padding:var(--space-8);color:var(--text-faint);
-      gap:var(--space-3);
-    }
-    .empty-panel svg{opacity:.3;}
-    .empty-panel p{font-size:var(--text-xs);}
-    .raw-block{
-      margin-top:var(--space-4);background:var(--surface-3);border:1px solid var(--border);
-      border-radius:var(--radius-md);padding:var(--space-3);
-      font-size:var(--text-xs);color:var(--text-muted);white-space:pre-wrap;
-      word-break:break-all;max-height:160px;overflow-y:auto;display:none;
-    }
-    .raw-block.visible{display:block;}
-    ::selection{background:var(--primary-bg);color:var(--text);}
-    :focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:var(--radius-sm);}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
-    a,button,[role="button"],input,textarea,select{
-      transition:color var(--transition),background var(--transition),border-color var(--transition),box-shadow var(--transition),transform var(--transition);
-    }
-  </style>
+/* ── STATUS BLOCK ── */
+.status-block{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rl);padding:var(--s4);display:none;}
+.status-block.on{display:block;}
+.status-row{display:flex;align-items:center;gap:var(--s2);}
+.status-msg{font-size:var(--tx);color:var(--txm);margin-top:var(--s2);line-height:1.7;white-space:pre-wrap;word-break:break-all;}
+
+/* ── VIDEO ── */
+.video-wrap{margin-top:var(--s5);display:none;}
+.video-wrap.on{display:block;}
+video{width:100%;border-radius:var(--rl);background:#000;max-height:260px;}
+.dl-btn{
+  display:flex;align-items:center;justify-content:center;gap:var(--s2);
+  width:100%;height:40px;margin-top:var(--s3);
+  background:var(--okb);color:var(--ok);
+  border:1px solid var(--okr);border-radius:var(--rmd);
+  font-size:var(--tx);font-weight:600;text-decoration:none;
+  transition:background var(--ease),transform var(--ease),box-shadow var(--ease);
+}
+.dl-btn:hover{background:var(--ok);color:#fff;transform:translateY(-1px);box-shadow:0 4px 14px var(--okr);}
+.dl-btn:active{transform:translateY(0);}
+
+/* ── TIMELINE ── */
+.timeline{display:flex;flex-direction:column;gap:var(--s3);margin-top:var(--s4);}
+.tline{
+  display:flex;align-items:flex-start;gap:var(--s3);
+  background:var(--sf2);border:1px solid var(--bd);
+  border-radius:var(--rmd);padding:var(--s3) var(--s4);
+}
+.tdot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:var(--txf);margin-top:4px;
+}
+.tdot.active{background:var(--pr);}
+.tdot.done{background:var(--ok);}
+.tdot.err{background:var(--er);}
+.tinfo-label{font-size:var(--tx);font-weight:500;}
+.tinfo-sub{font-size:var(--tx);color:var(--txm);margin-top:1px;}
+
+/* ── EMPTY ── */
+.empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:220px;text-align:center;padding:var(--s10);
+  gap:var(--s3);color:var(--txf);
+}
+.empty svg{opacity:.25;}
+.empty p{font-size:var(--tx);}
+
+/* ── RAW ── */
+.raw{
+  margin-top:var(--s4);background:var(--sf3);border:1px solid var(--bd);
+  border-radius:var(--rmd);padding:var(--s3);
+  font-size:var(--tx);color:var(--txm);white-space:pre-wrap;
+  word-break:break-all;max-height:150px;overflow-y:auto;display:none;
+}
+.raw.on{display:block;}
+
+/* ── SPINNER ── */
+.spin{
+  display:inline-block;width:12px;height:12px;
+  border:2px solid currentColor;border-top-color:transparent;
+  border-radius:50%;animation:sp .7s linear infinite;
+}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+/* ── MISC ── */
+::selection{background:var(--prb);color:var(--tx);}
+:focus-visible{outline:2px solid var(--pr);outline-offset:2px;border-radius:var(--rm);}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+a,button,[role=button],input,textarea,select{
+  transition:color var(--ease),background var(--ease),border-color var(--ease),box-shadow var(--ease),transform var(--ease);
+}
+</style>
 </head>
 <body>
+
+<!-- RAIL -->
+<nav class="rail">
+  <div class="rail-logo" aria-label="Grok Video Studio">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <rect x="2" y="4" width="14" height="16" rx="2"/>
+      <path d="M16 9l5 3-5 3V9z" fill="currentColor" stroke="none"/>
+    </svg>
+  </div>
+  <div class="rail-spacer"></div>
+  <button class="rail-btn" id="themeBtn" aria-label="切換深淺色">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
   <header class="topbar">
-    <div class="logo">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-label="logo">
-        <rect x="2" y="4" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M16 9l5 3-5 3V9z" fill="currentColor"/>
-      </svg>
-      Grok Video Studio
-    </div>
+    <span class="topbar-title">Video Studio</span>
     <div class="topbar-right">
-      <div class="api-status">
-        <span class="status-dot"></span>
+      <div class="dot-status">
+        <span class="dot"></span>
         <span>ai.ezif.in</span>
       </div>
-      <button class="btn-icon" id="themeBtn" aria-label="切換深淺色">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
     </div>
   </header>
 
-  <aside class="sidebar">
-    <div>
-      <div class="sidebar-section-title">模型資訊</div>
-      <div class="stat-card">
-        <div class="stat-label">目前模型</div>
-        <div class="stat-value" id="sideModel">grok-video-normal</div>
-        <div class="model-badge" id="sideBadge">標準</div>
-      </div>
-      <div class="stat-card" style="margin-top:var(--space-2)">
-        <div class="stat-label">輸出設定</div>
-        <div class="stat-value muted" id="sideOutput">5s · 16:9 · 720p</div>
-      </div>
-    </div>
-    <div>
-      <div class="sidebar-section-title">本次會話</div>
-      <div class="stat-card">
-        <div class="stat-label">已生成</div>
-        <div class="stat-value ok" id="sideCount">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">狀態</div>
-        <div class="stat-value muted" id="sideStatus">待機</div>
-      </div>
-    </div>
-  </aside>
-
-  <main class="main">
-    <div class="section-header">
-      <h1>影片生成台</h1>
-      <p>填寫設定後點擊生成，進度會顯示在右側面板</p>
-    </div>
-
-    <div class="form-card">
+  <div class="content">
+    <!-- API / Model -->
+    <div class="card">
+      <div class="card-title">連線設定</div>
       <div class="field">
         <label for="apiKey">API Key</label>
-        <div class="api-key-wrap">
-          <input type="password" id="apiKey" placeholder="輸入你的 API Key" autocomplete="off" />
-          <span class="toggle-key-wrap">
-            <button type="button" class="btn-inline" id="toggleKeyBtn">顯示</button>
-          </span>
+        <div class="key-wrap">
+          <input type="password" id="apiKey" placeholder="輸入你的 API Key" autocomplete="off"/>
+          <button type="button" class="show-btn" id="toggleKeyBtn">顯示</button>
         </div>
       </div>
-      <div class="field">
+      <div class="field" style="margin-top:var(--s5)">
         <label for="model">模型</label>
         <select id="model">
           <option value="grok-video-normal">grok-video-normal — 標準</option>
@@ -363,18 +318,20 @@ const HTML_PAGE = `<!DOCTYPE html>
       </div>
     </div>
 
-    <div class="form-card">
+    <!-- Prompt / Params -->
+    <div class="card">
+      <div class="card-title">生成設定</div>
       <div class="field">
-        <label for="prompt">提示詞 Prompt</label>
+        <label for="prompt">提示詞</label>
         <textarea id="prompt" placeholder="描述你想生成的影片，例如：A slow-motion wave crashing on a rocky shore at golden hour"></textarea>
-        <div class="examples">
-          <button type="button" class="example-chip" data-prompt="A cat walking across a sunny garden in slow motion">貓咪花園</button>
-          <button type="button" class="example-chip" data-prompt="Aerial view of a neon city at night, flying between skyscrapers">霓虹城市</button>
-          <button type="button" class="example-chip" data-prompt="Cherry blossoms falling in soft wind, cinematic depth of field">櫻花飄落</button>
-          <button type="button" class="example-chip" data-prompt="A samurai standing in the rain, fog, dramatic lighting">武士雨中</button>
+        <div class="chips">
+          <button type="button" class="chip" data-p="A cat walking across a sunny garden in slow motion">貓咪花園</button>
+          <button type="button" class="chip" data-p="Aerial view of a neon city at night, flying between skyscrapers">霓虹城市</button>
+          <button type="button" class="chip" data-p="Cherry blossoms falling in soft wind, cinematic depth of field">櫻花飄落</button>
+          <button type="button" class="chip" data-p="A samurai standing in the rain, fog, dramatic lighting">武士雨中</button>
         </div>
       </div>
-      <div class="grid-3" style="margin-top:var(--space-5)">
+      <div class="g3" style="margin-top:var(--s5)">
         <div class="field"><label for="duration">時長</label>
           <select id="duration"><option value="5">5 秒</option><option value="10">10 秒</option></select>
         </div>
@@ -385,258 +342,202 @@ const HTML_PAGE = `<!DOCTYPE html>
           <select id="resolution"><option value="720p">720p</option><option value="1080p">1080p</option></select>
         </div>
       </div>
-      <button type="button" id="genBtn" class="btn-primary-block">
+      <button type="button" id="genBtn" class="gen-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         生成影片
       </button>
     </div>
-  </main>
+  </div><!-- /content -->
+</div><!-- /main -->
 
-  <aside class="panel">
-    <div class="panel-header">
-      <span class="panel-title">輸出面板</span>
-      <span id="panelBadge"></span>
+<!-- PANEL -->
+<aside class="panel">
+  <div class="panel-head">
+    <span class="panel-head-title">輸出</span>
+    <span id="panelBadge"></span>
+  </div>
+  <div class="panel-body">
+    <div class="empty" id="emptyState">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <rect x="2" y="4" width="14" height="16" rx="2"/><path d="M16 9l5 3-5 3V9z"/>
+      </svg>
+      <p>尚未生成影片<br>填寫設定後點擊生成</p>
     </div>
-    <div class="panel-body">
-      <div class="empty-panel" id="emptyState">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <rect x="2" y="4" width="14" height="16" rx="2"/><path d="M16 9l5 3-5 3V9z"/>
-        </svg>
-        <p>尚未生成影片<br>填寫左側表單後點擊生成</p>
-      </div>
-      <div class="status-block" id="statusBlock">
-        <div class="status-row"><span class="status-badge info" id="statusBadge">處理中</span></div>
-        <div class="status-msg" id="statusMsg"></div>
-      </div>
-      <div class="video-wrap" id="videoWrap">
-        <video id="videoEl" controls playsinline></video>
-        <a id="downloadLink" class="btn-download" download="grok-video.mp4" href="#">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          下載影片
-        </a>
-      </div>
-      <div class="task-list" id="taskList"></div>
-      <div class="raw-block" id="rawBlock"></div>
+    <div class="status-block" id="statusBlock">
+      <div class="status-row"><span class="badge badge-info" id="statusBadge">處理中</span></div>
+      <div class="status-msg" id="statusMsg"></div>
     </div>
-  </aside>
+    <div class="video-wrap" id="videoWrap">
+      <video id="videoEl" controls playsinline></video>
+      <a id="dlLink" class="dl-btn" download="grok-video.mp4" href="#">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        下載影片
+      </a>
+    </div>
+    <div class="timeline" id="timeline"></div>
+    <div class="raw" id="rawBlock"></div>
+  </div>
+</aside>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var root = document.documentElement;
-    var theme = root.getAttribute('data-theme') ||
-      (window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // theme
+  var root = document.documentElement;
+  var theme = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+  root.setAttribute('data-theme', theme);
+  var themeBtn = document.getElementById('themeBtn');
+  function updateThemeIcon() {
+    themeBtn.innerHTML = theme === 'dark'
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  updateThemeIcon();
+  themeBtn.addEventListener('click', function(){
+    theme = theme === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', theme);
+    updateThemeIcon();
+  });
 
-    var themeBtn = document.getElementById('themeBtn');
-    function renderThemeIcon() {
-      themeBtn.innerHTML = theme === 'dark'
-        ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
-        : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-    }
-    renderThemeIcon();
-    themeBtn.addEventListener('click', function() {
-      theme = theme === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', theme);
-      renderThemeIcon();
+  // key toggle
+  var keyInp = document.getElementById('apiKey');
+  var showBtn = document.getElementById('toggleKeyBtn');
+  showBtn.addEventListener('click', function(){
+    if (keyInp.type === 'password') { keyInp.type = 'text'; showBtn.textContent = '隱藏'; }
+    else { keyInp.type = 'password'; showBtn.textContent = '顯示'; }
+  });
+
+  // chips
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){ document.getElementById('prompt').value = c.getAttribute('data-p'); });
+  });
+
+  // helpers
+  function $(id){ return document.getElementById(id); }
+  function setStatus(msg, type, loading) {
+    $('emptyState').style.display = 'none';
+    var sb = $('statusBlock'); sb.className = 'status-block on';
+    var badge = $('statusBadge');
+    var cls = {info:'badge-info',ok:'badge-ok',error:'badge-err',warning:'badge-warn'}[type] || 'badge-info';
+    var label = {info:'處理中',ok:'完成',error:'錯誤',warning:'等待中'}[type] || '處理中';
+    badge.className = 'badge ' + cls;
+    badge.innerHTML = (loading ? '<span class="spin"></span>' : '') + label;
+    $('statusMsg').textContent = msg;
+    var pb = $('panelBadge'); pb.className = 'badge ' + cls; pb.textContent = label;
+  }
+  function showRaw(obj){
+    var el = $('rawBlock');
+    try { el.textContent = JSON.stringify(obj, null, 2); } catch(e){ el.textContent = String(obj); }
+    el.className = 'raw on';
+  }
+  function addNode(id, label, sub, state) {
+    var tl = $('timeline');
+    var n = document.createElement('div'); n.className = 'tline'; n.id = 'tn-' + id;
+    n.innerHTML = '<div class="tdot '+(state||'')+'"></div><div class="tinfo"><div class="tinfo-label">'+label+'</div><div class="tinfo-sub tinfo-sub-'+id+'">'+sub+'</div></div>';
+    tl.appendChild(n);
+  }
+  function updateNode(id, sub, state) {
+    var n = $('tn-'+id); if (!n) return;
+    n.querySelector('.tdot').className = 'tdot '+(state||'');
+    n.querySelector('.tinfo-sub').textContent = sub;
+  }
+  function showVideo(url) {
+    $('videoEl').src = url; $('dlLink').href = url;
+    $('videoWrap').className = 'video-wrap on';
+    setStatus('影片生成成功！','ok');
+    genCount++; $('sideCount') && ($('sideCount').textContent = genCount);
+  }
+  function extractErr(d) {
+    if (!d) return '未知錯誤';
+    if (typeof d === 'string') return d;
+    if (d.error) return typeof d.error === 'string' ? d.error : (d.error.message||d.error.code||JSON.stringify(d.error));
+    if (d.message) return d.message;
+    if (d.detail) return typeof d.detail === 'string' ? d.detail : JSON.stringify(d.detail);
+    return JSON.stringify(d);
+  }
+  function extractUrl(d) {
+    if (!d) return null;
+    if (d.video_url) return d.video_url;
+    if (d.url) return d.url;
+    if (d.output) return d.output.video_url || d.output.url || null;
+    if (d.data && Array.isArray(d.data) && d.data[0]) return d.data[0].url || d.data[0].video_url || null;
+    if (d.result) return d.result.url || d.result.video_url || null;
+    return null;
+  }
+  function safeJson(resp) {
+    return resp.text().then(function(t){
+      try { return {ok:resp.ok,status:resp.status,data:JSON.parse(t)}; }
+      catch(e){ return {ok:resp.ok,status:resp.status,data:{error:t||('HTTP '+resp.status)}}; }
     });
+  }
 
-    var toggleKeyBtn = document.getElementById('toggleKeyBtn');
-    var apiKeyInp = document.getElementById('apiKey');
-    toggleKeyBtn.addEventListener('click', function() {
-      if (apiKeyInp.type === 'password') { apiKeyInp.type = 'text'; toggleKeyBtn.textContent = '隱藏'; }
-      else { apiKeyInp.type = 'password'; toggleKeyBtn.textContent = '顯示'; }
-    });
-
-    document.querySelectorAll('.example-chip').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.getElementById('prompt').value = btn.getAttribute('data-prompt');
-      });
-    });
-
-    function syncSidebar() {
-      var m = document.getElementById('model').value;
-      var d = document.getElementById('duration').value;
-      var a = document.getElementById('aspect_ratio').value;
-      var r = document.getElementById('resolution').value;
-      document.getElementById('sideModel').textContent = m;
-      document.getElementById('sideBadge').textContent = m === 'grok-imagine-video' ? '高品質' : '標準';
-      document.getElementById('sideOutput').textContent = d + 's \u00b7 ' + a + ' \u00b7 ' + r;
-    }
-    ['model','duration','aspect_ratio','resolution'].forEach(function(id) {
-      document.getElementById(id).addEventListener('change', syncSidebar);
-    });
-    syncSidebar();
-
-    var genCount = 0;
-    function setStatus(msg, type, loading) {
-      var block = document.getElementById('statusBlock');
-      var badge = document.getElementById('statusBadge');
-      var msgEl = document.getElementById('statusMsg');
-      document.getElementById('emptyState').style.display = 'none';
-      block.style.display = 'block';
-      block.className = 'status-block visible';
-      badge.className = 'status-badge ' + (type || 'info');
-      var labels = { info:'處理中', ok:'完成', error:'錯誤', warning:'等待中' };
-      badge.innerHTML = (loading ? '<span class="spinner"></span>' : '') + (labels[type] || '處理中');
-      msgEl.textContent = msg;
-      document.getElementById('sideStatus').textContent = labels[type] || '處理中';
-      var pb = document.getElementById('panelBadge');
-      pb.className = 'status-badge ' + (type || 'info');
-      pb.textContent = labels[type] || '處理中';
-    }
-    function showRaw(obj) {
-      var el = document.getElementById('rawBlock');
-      try { el.textContent = JSON.stringify(obj, null, 2); } catch(e) { el.textContent = String(obj); }
-      el.className = 'raw-block visible';
-    }
-    function addTask(id, label, sub, state) {
-      var list = document.getElementById('taskList');
-      var node = document.createElement('div');
-      node.className = 'task-node'; node.id = 'tn-' + id;
-      node.innerHTML = '<div class="task-dot ' + (state||'') + '"></div><div class="task-info"><div class="task-label">' + label + '</div><div class="task-sub task-sub-' + id + '">' + sub + '</div></div>';
-      list.appendChild(node);
-    }
-    function updateTask(id, sub, state) {
-      var node = document.getElementById('tn-' + id);
-      if (!node) return;
-      node.querySelector('.task-dot').className = 'task-dot ' + (state || '');
-      node.querySelector('.task-sub').textContent = sub;
-    }
-    function showVideo(url) {
-      var vEl = document.getElementById('videoEl');
-      vEl.src = url;
-      document.getElementById('downloadLink').href = url;
-      document.getElementById('videoWrap').className = 'video-wrap visible';
-      setStatus('影片生成成功！', 'ok');
-      genCount++;
-      document.getElementById('sideCount').textContent = genCount;
-      document.getElementById('sideStatus').textContent = '完成';
-    }
-    function extractError(data) {
-      if (!data) return '未知錯誤';
-      if (typeof data === 'string') return data;
-      if (data.error) {
-        if (typeof data.error === 'string') return data.error;
-        if (typeof data.error === 'object') return data.error.message || data.error.code || JSON.stringify(data.error);
-      }
-      if (data.message) return data.message;
-      if (data.detail) return typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
-      return JSON.stringify(data);
-    }
-    function extractVideoUrl(data) {
-      if (!data) return null;
-      if (data.video_url) return data.video_url;
-      if (data.url) return data.url;
-      if (data.output && data.output.video_url) return data.output.video_url;
-      if (data.output && data.output.url) return data.output.url;
-      if (data.data && Array.isArray(data.data) && data.data[0]) return data.data[0].url || data.data[0].video_url || null;
-      if (data.result && data.result.url) return data.result.url;
-      if (data.result && data.result.video_url) return data.result.video_url;
-      return null;
-    }
-    function safeJson(resp) {
-      return resp.text().then(function(text) {
-        try { return { ok: resp.ok, status: resp.status, data: JSON.parse(text) }; }
-        catch(e) { return { ok: resp.ok, status: resp.status, data: { error: text || ('HTTP ' + resp.status) } }; }
-      });
-    }
-    function pollStatus(apiKey, taskId, attempt) {
-      if (attempt > 60) {
-        setStatus('超時，請稍後手動查詢\nTask ID: ' + taskId, 'error');
-        updateTask('poll', '超時', 'err'); return;
-      }
-      fetch('/api/status?task_id=' + encodeURIComponent(taskId) + '&apiKey=' + encodeURIComponent(apiKey))
-        .then(safeJson)
-        .then(function(res) {
-          var data = res.data;
-          if (!res.ok) {
-            setStatus('查詢失敗 (HTTP ' + res.status + ')：\n' + extractError(data), 'error');
-            showRaw(data); updateTask('poll', '查詢失敗', 'err'); return;
-          }
-          var st = (data.status || data.state || '').toLowerCase();
-          if (st === 'succeeded' || st === 'completed' || st === 'success') {
-            var url = extractVideoUrl(data);
-            updateTask('poll', '生成完成', 'done');
-            addTask('ready', '影片就緒', url ? url.substring(0,50) + '...' : '已完成', 'done');
-            if (url) showVideo(url);
-            else { setStatus('完成，但找不到影片 URL', 'warning'); showRaw(data); }
-            return;
-          }
-          if (st === 'failed' || st === 'error' || st === 'cancelled') {
-            setStatus('生成失敗：\n' + extractError(data), 'error');
-            showRaw(data); updateTask('poll', '失敗', 'err'); return;
-          }
-          var prog = data.progress ? ' (' + data.progress + '%)' : '';
-          setStatus('狀態：' + (st || '處理中') + prog + '\n已等待 ' + (attempt * 5) + ' 秒...', 'warning', true);
-          updateTask('poll', '狀態：' + (st || '處理中') + prog, 'active');
-          setTimeout(function() { pollStatus(apiKey, taskId, attempt + 1); }, 5000);
-        })
-        .catch(function(e) { setStatus('輪詢網路錯誤：' + e.message, 'error'); updateTask('poll', '錯誤', 'err'); });
-    }
-
-    var genBtn = document.getElementById('genBtn');
-    if (!genBtn) { console.error('[GrokStudio] genBtn not found'); return; }
-
-    genBtn.addEventListener('click', function() {
-      var apiKey = apiKeyInp.value.trim();
-      var prompt = document.getElementById('prompt').value.trim();
-      var model = document.getElementById('model').value;
-      var duration = parseInt(document.getElementById('duration').value, 10);
-      var aspect_ratio = document.getElementById('aspect_ratio').value;
-      var resolution = document.getElementById('resolution').value;
-
-      if (!apiKey) { setStatus('請輸入 API Key', 'error'); return; }
-      if (!prompt) { setStatus('請輸入提示詞', 'error'); return; }
-
-      genBtn.disabled = true;
-      genBtn.innerHTML = '<span class="spinner"></span> 生成中…';
-      document.getElementById('videoWrap').className = 'video-wrap';
-      document.getElementById('taskList').innerHTML = '';
-      document.getElementById('rawBlock').className = 'raw-block';
-      addTask('submit', '提交任務', '正在傳送請求...', 'active');
-      setStatus('正在提交影片生成請求...', 'info', true);
-
-      function resetBtn() {
-        genBtn.disabled = false;
-        genBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 生成影片';
-      }
-
-      fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey: apiKey, model: model, prompt: prompt, duration: duration, aspect_ratio: aspect_ratio, resolution: resolution })
-      })
-      .then(safeJson)
-      .then(function(res) {
-        var data = res.data;
-        resetBtn();
-        if (!res.ok) {
-          var errMsg = extractError(data);
-          showRaw(data);
-          setStatus('提交失敗 (HTTP ' + res.status + ')：\n' + errMsg, 'error');
-          updateTask('submit', '失敗：' + errMsg, 'err');
-          return;
+  var genCount = 0;
+  function poll(apiKey, taskId, attempt) {
+    if (attempt > 60) { setStatus('超時，Task ID: '+taskId,'error'); updateNode('poll','超時','err'); return; }
+    fetch('/api/status?task_id='+encodeURIComponent(taskId)+'&apiKey='+encodeURIComponent(apiKey))
+      .then(safeJson).then(function(res){
+        var d = res.data;
+        if (!res.ok) { setStatus('查詢失敗 HTTP '+res.status+'：\n'+extractErr(d),'error'); showRaw(d); updateNode('poll','查詢失敗','err'); return; }
+        var st = (d.status||d.state||'').toLowerCase();
+        if (st==='succeeded'||st==='completed'||st==='success') {
+          var url = extractUrl(d); updateNode('poll','生成完成','done');
+          addNode('ready','影片就緒',url?url.substring(0,50)+'...':'已完成','done');
+          if (url) showVideo(url); else { setStatus('完成，但找不到影片 URL','warning'); showRaw(d); } return;
         }
-        updateTask('submit', '已成功提交', 'done');
-        var taskId = data.id || data.task_id || (data.data && data.data[0] && data.data[0].id);
-        if (!taskId) {
-          var url = extractVideoUrl(data);
-          if (url) { showVideo(url); }
-          else { setStatus('任務完成（無需輪詢）', 'ok'); showRaw(data); }
-          return;
-        }
-        addTask('poll', '輪詢狀態', 'Task ID: ' + taskId, 'active');
-        setStatus('任務已提交，等待生成...\nTask ID: ' + taskId, 'warning', true);
-        pollStatus(apiKey, taskId, 0);
+        if (st==='failed'||st==='error'||st==='cancelled') { setStatus('生成失敗：\n'+extractErr(d),'error'); showRaw(d); updateNode('poll','失敗','err'); return; }
+        var prog = d.progress ? ' ('+d.progress+'%)' : '';
+        setStatus('狀態：'+(st||'處理中')+prog+'\n已等待 '+(attempt*5)+' 秒...','warning',true);
+        updateNode('poll','狀態：'+(st||'處理中')+prog,'active');
+        setTimeout(function(){ poll(apiKey,taskId,attempt+1); }, 5000);
       })
-      .catch(function(e) {
-        resetBtn();
-        setStatus('提交任務失敗：\n' + e.message, 'error');
-        updateTask('submit', '失敗：' + e.message, 'err');
-      });
+      .catch(function(e){ setStatus('輪詢錯誤：'+e.message,'error'); updateNode('poll','錯誤','err'); });
+  }
+
+  var genBtn = $('genBtn');
+  genBtn.addEventListener('click', function(){
+    var apiKey = keyInp.value.trim();
+    var prompt = $('prompt').value.trim();
+    var model = $('model').value;
+    var duration = parseInt($('duration').value,10);
+    var aspect_ratio = $('aspect_ratio').value;
+    var resolution = $('resolution').value;
+    if (!apiKey) { setStatus('請輸入 API Key','error'); return; }
+    if (!prompt) { setStatus('請輸入提示詞','error'); return; }
+
+    genBtn.disabled = true;
+    genBtn.innerHTML = '<span class="spin"></span> 生成中…';
+    $('videoWrap').className = 'video-wrap';
+    $('timeline').innerHTML = '';
+    $('rawBlock').className = 'raw';
+    addNode('submit','提交任務','正在傳送請求...','active');
+    setStatus('正在提交影片生成請求...','info',true);
+
+    function resetBtn(){
+      genBtn.disabled = false;
+      genBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 生成影片';
+    }
+
+    fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({apiKey,model,prompt,duration,aspect_ratio,resolution})
+    }).then(safeJson).then(function(res){
+      var d = res.data; resetBtn();
+      if (!res.ok) { showRaw(d); setStatus('提交失敗 HTTP '+res.status+'：\n'+extractErr(d),'error'); updateNode('submit','失敗：'+extractErr(d),'err'); return; }
+      updateNode('submit','已成功提交','done');
+      var taskId = d.id||d.task_id||(d.data&&d.data[0]&&d.data[0].id);
+      if (!taskId) {
+        var url = extractUrl(d);
+        if (url) showVideo(url); else { setStatus('任務完成（無需輪詢）','ok'); showRaw(d); } return;
+      }
+      addNode('poll','輪詢狀態','Task ID: '+taskId,'active');
+      setStatus('任務已提交，等待生成...\nTask ID: '+taskId,'warning',true);
+      poll(apiKey,taskId,0);
+    }).catch(function(e){
+      resetBtn(); setStatus('提交失敗：\n'+e.message,'error'); updateNode('submit','失敗','err');
     });
   });
-  </script>
+});
+</script>
 </body>
 </html>`;
 
@@ -662,12 +563,10 @@ export default {
         const body = await request.json();
         const { apiKey, model, prompt, duration, aspect_ratio, resolution } = body;
         if (!apiKey || !prompt) return jsonRes({ error: 'Missing apiKey or prompt' }, 400);
-
         const reqBody = { model, prompt };
         if (duration) reqBody.duration = duration;
         if (aspect_ratio) reqBody.aspect_ratio = aspect_ratio;
         if (resolution) reqBody.resolution = resolution;
-
         const resp = await fetch(API_BASE + '/videos/generations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
