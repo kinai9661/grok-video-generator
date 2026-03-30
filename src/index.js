@@ -286,7 +286,7 @@ const HTML_PAGE = `<!DOCTYPE html>
           <select id="resolution"><option value="720p">720p</option><option value="1080p">1080p</option></select>
         </div>
       </div>
-      <button type="button" id="genBtn" class="gen-btn">生成影片</button>
+      <button type="button" id="genBtn" class="gen-btn">✨ 生成影片</button>
     </div>
   </main>
 
@@ -388,7 +388,7 @@ const HTML_PAGE = `<!DOCTYPE html>
       var list = document.getElementById('taskList');
       var node = document.createElement('div');
       node.className = 'task-node'; node.id = 'tn-'+id;
-      node.innerHTML = '<div class="task-dot ' + (state||'') + '"></div><div class="task-info"><div class="task-label">'+label+'</div><div class="task-sub">'+sub+'</div></div>';
+      node.innerHTML = '<div class="task-dot ' + (state||'') + '"></div><div class="task-info"><div class="task-label">'+label+'</div><div class="task-sub task-sub-'+id+'">'+sub+'</div></div>';
       list.appendChild(node);
     }
     function updateTask(id, sub, state){
@@ -408,6 +408,14 @@ const HTML_PAGE = `<!DOCTYPE html>
       document.getElementById('sideStatus').textContent = '完成';
     }
 
+    // ── safe JSON parse from response ──
+    function safeJson(resp){
+      return resp.text().then(function(text){
+        try { return { ok: resp.ok, status: resp.status, data: JSON.parse(text) }; }
+        catch(e) { return { ok: resp.ok, status: resp.status, data: { error: text || ('HTTP ' + resp.status) } }; }
+      });
+    }
+
     // ── poll ──
     function pollStatus(apiKey, taskId, attempt){
       if(attempt > 60){
@@ -415,18 +423,23 @@ const HTML_PAGE = `<!DOCTYPE html>
         updateTask('poll','超時','err'); return;
       }
       fetch('/api/status?task_id='+encodeURIComponent(taskId)+'&apiKey='+encodeURIComponent(apiKey))
-        .then(function(r){ return r.json(); })
-        .then(function(data){
+        .then(safeJson)
+        .then(function(res){
+          var data = res.data;
+          if(!res.ok){
+            setStatus('查詢失敗：'+(data.error||res.status), 'error');
+            updateTask('poll','查詢失敗','err'); return;
+          }
           var st = data.status || data.state;
           if(st==='succeeded'||st==='completed'||st==='success'){
             var url = data.video_url||(data.output&&data.output.video_url)||(data.data&&data.data[0]&&data.data[0].url);
             updateTask('poll','生成完成','done');
-            addTask('ready','影片就緒', url ? url.substring(0,40)+'...' : '已完成','done');
+            addTask('ready','影片就緒', url ? url.substring(0,50)+'...' : '已完成','done');
             if(url) showVideo(url); else setStatus(JSON.stringify(data,null,2),'ok');
             return;
           }
           if(st==='failed'||st==='error'){
-            setStatus('生成失敗：'+JSON.stringify(data),'error');
+            setStatus('生成失敗：'+(data.error||JSON.stringify(data)),'error');
             updateTask('poll','失敗','err'); return;
           }
           var prog = data.progress ? ' ('+data.progress+'%)' : '';
@@ -434,41 +447,45 @@ const HTML_PAGE = `<!DOCTYPE html>
           updateTask('poll','狀態：'+(st||'處理中')+prog,'active');
           setTimeout(function(){ pollStatus(apiKey, taskId, attempt+1); }, 5000);
         })
-        .catch(function(e){ setStatus('輪詢錯誤：'+e.message,'error'); });
+        .catch(function(e){ setStatus('輪詢錯誤：'+e.message,'error'); updateTask('poll','錯誤','err'); });
     }
 
     // ── generate ──
-    document.getElementById('genBtn').addEventListener('click', function(){
+    var genBtn = document.getElementById('genBtn');
+    genBtn.addEventListener('click', function(){
       var apiKey = apiKeyInp.value.trim();
       var prompt = document.getElementById('prompt').value.trim();
       var model = document.getElementById('model').value;
-      var duration = parseInt(document.getElementById('duration').value,10);
+      var duration = parseInt(document.getElementById('duration').value, 10);
       var aspect_ratio = document.getElementById('aspect_ratio').value;
       var resolution = document.getElementById('resolution').value;
+
       if(!apiKey){ setStatus('請輸入 API Key','error'); return; }
       if(!prompt){ setStatus('請輸入提示詞','error'); return; }
-      var btn = document.getElementById('genBtn');
-      btn.disabled = true; btn.textContent = '生成中...';
+
+      genBtn.disabled = true;
+      genBtn.textContent = '生成中...';
       document.getElementById('videoWrap').className = 'video-wrap';
       document.getElementById('taskList').innerHTML = '';
       addTask('submit','提交任務','正在傳送請求...','active');
       setStatus('正在提交影片生成請求...','info',true);
-      fetch('/api/generate',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({apiKey,model,prompt,duration,aspect_ratio,resolution})
+
+      fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: apiKey, model: model, prompt: prompt, duration: duration, aspect_ratio: aspect_ratio, resolution: resolution })
       })
-      .then(function(r){
-        return r.json().then(function(data){ return {ok:r.ok, data:data}; });
-      })
+      .then(safeJson)
       .then(function(res){
-        if(!res.ok) throw new Error(res.data.error || JSON.stringify(res.data));
         var data = res.data;
+        if(!res.ok){
+          throw new Error(data.error || ('HTTP ' + res.status));
+        }
         updateTask('submit','已成功提交','done');
         var taskId = data.id || data.task_id;
         if(!taskId){
           if(data.video_url){ showVideo(data.video_url); }
-          else if(data.data&&data.data[0]&&data.data[0].url){ showVideo(data.data[0].url); }
+          else if(data.data && data.data[0] && data.data[0].url){ showVideo(data.data[0].url); }
           else { setStatus(JSON.stringify(data,null,2),'ok'); }
           return;
         }
@@ -481,7 +498,8 @@ const HTML_PAGE = `<!DOCTYPE html>
         updateTask('submit','失敗：'+e.message,'err');
       })
       .finally(function(){
-        btn.disabled = false; btn.textContent = '生成影片';
+        genBtn.disabled = false;
+        genBtn.textContent = '✨ 生成影片';
       });
     });
   })();
@@ -516,7 +534,10 @@ export default {
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
           body: JSON.stringify({ model, prompt, duration, aspect_ratio, resolution })
         });
-        return jsonRes(await resp.json(), resp.status);
+        const text = await resp.text();
+        let data;
+        try { data = JSON.parse(text); } catch(e) { data = { error: text }; }
+        return jsonRes(data, resp.status);
       } catch(e) { return jsonRes({ error: e.message }, 500); }
     }
 
@@ -528,7 +549,10 @@ export default {
         const resp = await fetch(API_BASE + '/videos/generations/' + taskId, {
           headers: { 'Authorization': 'Bearer ' + apiKey }
         });
-        return jsonRes(await resp.json(), resp.status);
+        const text = await resp.text();
+        let data;
+        try { data = JSON.parse(text); } catch(e) { data = { error: text }; }
+        return jsonRes(data, resp.status);
       } catch(e) { return jsonRes({ error: e.message }, 500); }
     }
 
