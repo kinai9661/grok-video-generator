@@ -1,0 +1,9 @@
+name = "grok-video-generator"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+API_BASE_URL = "https://ai.ezif.in/v1"
+
+# Set your API key via: wrangler secret put API_KEY

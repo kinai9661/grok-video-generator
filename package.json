@@ -1,0 +1,12 @@
+{
+  "name": "grok-video-generator",
+  "version": "1.0.0",
+  "description": "Grok Video Generator deployed on Cloudflare Workers",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
