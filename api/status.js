@@ -16,8 +16,13 @@ export default async function handler(req, res) {
     const text = await upstream.text();
     let data;
     try { data = JSON.parse(text); } catch { data = { error: text }; }
+
+    if (data && data.error && typeof data.error === 'object') {
+      data.error = JSON.stringify(data.error);
+    }
+
     return res.status(upstream.status).json(data);
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message || String(e) });
   }
 }
