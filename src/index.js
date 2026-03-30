@@ -45,7 +45,8 @@ const HTML_PAGE = `<!DOCTYPE html>
     select option { background: #302b63; }
     .row { display: flex; gap: 12px; }
     .row > div { flex: 1; }
-    button {
+    /* Global button style - only for .gen-btn */
+    .gen-btn {
       width: 100%;
       margin-top: 24px;
       padding: 14px;
@@ -57,9 +58,10 @@ const HTML_PAGE = `<!DOCTYPE html>
       font-weight: 600;
       cursor: pointer;
       transition: opacity 0.2s, transform 0.1s;
+      display: block;
     }
-    button:hover { opacity: 0.9; transform: translateY(-1px); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .gen-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     #status {
       margin-top: 20px;
       padding: 14px 18px;
@@ -98,11 +100,26 @@ const HTML_PAGE = `<!DOCTYPE html>
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .api-key-wrap { position: relative; }
+    .api-key-wrap input { padding-right: 60px; }
     .toggle-key {
-      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; color: #94a3b8; cursor: pointer;
-      font-size: 0.8rem; width: auto; margin: 0; padding: 4px 8px;
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.1) !important;
+      border: 1px solid rgba(255,255,255,0.2) !important;
+      border-radius: 6px !important;
+      color: #94a3b8 !important;
+      cursor: pointer;
+      font-size: 0.75rem !important;
+      width: auto !important;
+      min-width: 44px;
+      margin: 0 !important;
+      padding: 4px 8px !important;
+      line-height: 1.4;
+      z-index: 2;
     }
+    .toggle-key:hover { background: rgba(255,255,255,0.18) !important; color: #fff !important; }
   </style>
 </head>
 <body>
@@ -113,7 +130,7 @@ const HTML_PAGE = `<!DOCTYPE html>
     <label>API Key</label>
     <div class="api-key-wrap">
       <input type="password" id="apiKey" placeholder="輸入你的 API Key" />
-      <button class="toggle-key" onclick="toggleKey()">顯示</button>
+      <button type="button" class="toggle-key" onclick="toggleKey(this)">顯示</button>
     </div>
 
     <label>模型</label>
@@ -150,7 +167,7 @@ const HTML_PAGE = `<!DOCTYPE html>
       </div>
     </div>
 
-    <button id="genBtn" onclick="generate()">✨ 生成影片</button>
+    <button type="button" id="genBtn" class="gen-btn" onclick="generate()">✨ 生成影片</button>
 
     <div id="status"></div>
     <div id="video-result">
@@ -161,9 +178,8 @@ const HTML_PAGE = `<!DOCTYPE html>
   </div>
 
   <script>
-    function toggleKey() {
+    function toggleKey(btn) {
       const inp = document.getElementById('apiKey');
-      const btn = event.target;
       if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '隱藏'; }
       else { inp.type = 'password'; btn.textContent = '顯示'; }
     }
@@ -202,10 +218,8 @@ const HTML_PAGE = `<!DOCTYPE html>
 
         const taskId = data.id || data.task_id;
         if (!taskId) {
-          // Synchronous response with video URL
           if (data.video_url || (data.data && data.data[0] && data.data[0].url)) {
-            const url = data.video_url || data.data[0].url;
-            showVideo(url);
+            showVideo(data.video_url || data.data[0].url);
           } else {
             setStatus('✅ 回應：\n' + JSON.stringify(data, null, 2), 'success');
           }
@@ -267,6 +281,17 @@ export default {
     const url = new URL(request.url);
     const API_BASE = env.API_BASE_URL || 'https://ai.ezif.in/v1';
 
+    // Handle CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+      });
+    }
+
     // Serve frontend
     if (url.pathname === '/' || url.pathname === '') {
       return new Response(HTML_PAGE, {
@@ -285,11 +310,11 @@ export default {
         }
 
         const payload = { model, prompt, duration, aspect_ratio, resolution };
-        const resp = await fetch(`${API_BASE}/videos/generations`, {
+        const resp = await fetch(\`\${API_BASE}/videos/generations\`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
+            'Authorization': \`Bearer \${apiKey}\`
           },
           body: JSON.stringify(payload)
         });
@@ -311,8 +336,8 @@ export default {
       }
 
       try {
-        const resp = await fetch(`${API_BASE}/videos/generations/${taskId}`, {
-          headers: { 'Authorization': `Bearer ${apiKey}` }
+        const resp = await fetch(\`\${API_BASE}/videos/generations/\${taskId}\`, {
+          headers: { 'Authorization': \`Bearer \${apiKey}\` }
         });
         const data = await resp.json();
         return jsonResponse(data, resp.status);
